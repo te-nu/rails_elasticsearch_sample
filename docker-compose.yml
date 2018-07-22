@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  rails:
+    build:
+      context: .
+      dockerfile: docker/rails/Dockerfile
+    volumes:
+      - .:/rails_elasticsearch_sample
+      - /rails_elasticsearch_sample/vendor/bundle
+    links:
+      - mysql
+      - elasticsearch
+    ports:
+      - 3000:3000
+    command: "rails s -b 0.0.0.0"
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - mysql-db:/var/lib/mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+
+  elasticsearch:
+    image: elasticsearch
+
+  kibana:
+    image: kibana
+    ports:
+      - 5601:5601
+    links:
+      - elasticsearch
+
+volumes:
+  mysql-db:
+    driver: local
